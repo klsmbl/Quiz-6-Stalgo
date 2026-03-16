@@ -135,6 +135,10 @@ a {
   background: linear-gradient(155deg, #7a4c18, #bd7d2f 68%, #214f53);
 }
 
+.seller-panel {
+  background: linear-gradient(155deg, #214f53, #2e6e72 55%, #c47a22);
+}
+
 .auth-eyebrow,
 .footer-kicker,
 .role-note-label {

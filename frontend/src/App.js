@@ -5,6 +5,7 @@ import HomeScreen from "./screens/HomeScreen";
 import DetailScreen from "./screens/DetailScreen";
 import SignIn from "./screens/SignIn";
 import SignUp from "./screens/SignUp";
+import ApplySeller from "./screens/ApplySeller";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/service/:id" element={<DetailScreen />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/apply-seller" element={<ApplySeller />} />
         </Routes>
         <Footer />
       </div>

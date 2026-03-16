@@ -15,6 +15,9 @@ function Header() {
               <Nav.Link as={NavLink} to="/" end>
                 Home
               </Nav.Link>
+              <Nav.Link as={NavLink} to="/apply-seller">
+                Apply as Expert
+              </Nav.Link>
               <Nav.Link as={NavLink} to="/signin">
                 Sign In
               </Nav.Link>
