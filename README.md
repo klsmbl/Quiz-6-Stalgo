@@ -1,123 +1,192 @@
 # Carpet and Upholstery Cleaning Services Marketplace
 
-A React frontend marketplace where customers can find carpet and upholstery cleaning experts, view services, and book through PayPal. The app supports role-based flows for customers, sellers, and admins.
+Full-stack service marketplace for Carpet and Upholstery Cleaning.
+
+The project includes:
+
+- React frontend (marketplace UI, auth flows, dashboards, chatbot widget)
+- Django REST backend (JWT auth, seller applications, services, orders, chatbot API)
 
 ## Project Structure
 
-- Root folder contains this README and workspace-level files.
-- Main frontend app is inside `frontend/`.
-- Redux architecture is inside `frontend/src/redux/`:
-	- `constants/`
-	- `actions/`
-	- `reducers/`
-	- `store.js`
+- `frontend/` - React application
+- `backend/` - Django REST API
+
+Frontend Redux architecture:
+
+- `frontend/src/redux/constants/`
+- `frontend/src/redux/actions/`
+- `frontend/src/redux/reducers/`
+- `frontend/src/redux/store.js`
+
+Backend apps:
+
+- `backend/users/`
+- `backend/applications/`
+- `backend/services/`
+- `backend/orders/`
+- `backend/chat/`
 
 ## Tech Stack
+
+Frontend:
 
 - React.js
 - React Router
 - Redux
 - React Bootstrap + Bootswatch
-- Create React App tooling
 
-## Features
+Backend:
 
-### Customer Features
+- Django
+- Django REST Framework
+- Simple JWT (`djangorestframework-simplejwt`)
+- django-cors-headers
 
-- Browse cleaning services on the home page.
-- View service details.
-- Book services through PayPal checkout.
-- View profile information and booking history.
+## Core Features
 
-### Seller Features
+Customer:
 
-- Apply as a cleaning expert (requires admin approval).
-- Access seller dashboard after approval.
-- Add new cleaning services.
-- Manage existing services:
-	- View
-	- Edit
-	- Delete
+- Browse and view services
+- Book services via PayPal flow
+- View profile and order history
 
-### Admin Features
+Seller:
 
-- Access admin-only user management page.
-- Manage users:
-	- Edit
-	- Delete
-- Review seller applications:
-	- Approve (requires `merchant_id`)
-	- Decline (requires `reason_for_decline`)
+- Apply as cleaning expert
+- Manage own services (add, view, edit, delete)
 
-### AI Chatbot
+Admin:
 
-- Basic in-app chatbot for project-related questions only.
-- Supports common user questions about:
-	- Booking
-	- Seller application
-	- Payments
-	- Service duration
+- Manage users
+- Review seller applications
+- Approve with `merchant_id`
+- Decline with `reason_for_decline`
+
+AI Chat:
+
+- In-app chatbot on frontend
+- Backend chatbot API endpoint
 
 ## Route Protection
 
-Protected pages require login and redirect to `/signin` when unauthenticated:
+Protected frontend pages redirect to `/signin` if not authenticated:
 
 - `/profile`
 - `/seller/dashboard`
 - `/apply-seller`
 - `/admin/users`
 
-Additional role protection:
+Role guards:
 
 - Admin-only: `/admin/users`
 - Seller-only: `/seller/dashboard`
 
-## PayPal Booking Behavior
+## PayPal Behavior
 
-When a customer books a service:
+When booking:
 
-- Payment is directed to the seller PayPal account.
-- Platform facilitates and tracks transaction metadata.
-- PayPal order description uses **service name only**.
-- Full service description is not used as order description.
+- Payment target is seller PayPal account
+- Platform stores transaction metadata in orders
+- Order description uses service name
+- Full description is not used as order description
 
-## Getting Started
+## Frontend Setup
 
-### 1) Install Dependencies
+Run from project root:
 
-Run commands from the frontend app folder:
+1. `cd frontend`
+2. `npm install`
+3. `npm start`
 
-```powershell
-cd frontend
-npm install
-```
+Build frontend:
 
-### 2) Run Development Server
+1. `cd frontend`
+2. `npm run build`
 
-```powershell
-cd frontend
-npm start
-```
+Frontend local URL:
 
-Open http://localhost:3000
+- `http://localhost:3000`
 
-### 3) Build for Production
+## Backend Setup
 
-```powershell
-cd frontend
-npm run build
-```
+Run from project root:
 
-## Demo Admin Account
+1. `cd backend`
+2. `py -m pip install -r requirements.txt`
+3. `py manage.py makemigrations`
+4. `py manage.py migrate`
+5. `py manage.py runserver`
 
-Auto-seeded on app startup if no admin exists:
+Backend local URL:
+
+- `http://127.0.0.1:8000`
+
+## Backend API Base Routes
+
+- `/api/v1/users/`
+- `/api/v1/applications/`
+- `/api/v1/services/`
+- `/api/v1/orders/`
+- `/api/v1/chat/`
+
+## Backend Endpoints
+
+Users:
+
+- `POST /api/v1/users/login/`
+- `POST /api/v1/users/register/`
+- `GET /api/v1/users/profile/`
+- `GET /api/v1/users/admin/users/`
+
+Applications:
+
+- `POST /api/v1/applications/apply/`
+- `GET /api/v1/applications/list/`
+- `POST /api/v1/applications/<pk>/approve/`
+- `POST /api/v1/applications/<pk>/decline/`
+
+Services:
+
+- `GET /api/v1/services/list/`
+- `GET /api/v1/services/<pk>/`
+- `GET|POST /api/v1/services/manage/`
+- `GET|PUT|PATCH|DELETE /api/v1/services/manage/<pk>/`
+
+Orders:
+
+- `POST /api/v1/orders/create/`
+- `GET /api/v1/orders/history/`
+
+Chat:
+
+- `POST /api/v1/chat/ask/`
+
+## Quick Chat API Test
+
+Example request:
+
+`curl.exe -X POST "http://127.0.0.1:8000/api/v1/chat/ask/" -H "Content-Type: application/json" -d "{\"message\":\"How do I book a carpet cleaning service?\"}"`
+
+## Common Issues
+
+If backend root shows 404:
+
+- Use `http://127.0.0.1:8000/` after running server
+- API endpoints are under `/api/v1/...`
+
+If `ModuleNotFoundError: corsheaders`:
+
+- Install with `py -m pip install django-cors-headers`
+
+If JWT package missing:
+
+- Install with `py -m pip install djangorestframework-simplejwt`
+
+## Demo Admin Account (Frontend)
+
+Auto-seeded in frontend local storage:
 
 - Email: `admin@cleanlink.com`
 - Password: `Admin12345`
-
-## Available Scripts (inside `frontend/`)
-
-- `npm start` - Run development server
-- `npm run build` - Build production assets
-- `npm test` - Run tests
 
