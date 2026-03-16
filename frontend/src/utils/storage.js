@@ -1,6 +1,7 @@
 const USERS_KEY = "cleanLinkUsers";
 const CURRENT_USER_KEY = "cleanLinkCurrentUser";
 const SELLER_APPLICATIONS_KEY = "cleanLinkSellerApplications";
+const SELLER_SERVICES_KEY = "cleanLinkSellerServices";
 
 const defaultAdminUser = {
   email: "admin@cleanlink.com",
@@ -85,4 +86,12 @@ export function getDefaultAdminCredentials() {
     email: defaultAdminUser.email,
     password: defaultAdminUser.password,
   };
+}
+
+export function getSellerServices() {
+  return readJson(SELLER_SERVICES_KEY, []);
+}
+
+export function saveSellerServices(services) {
+  localStorage.setItem(SELLER_SERVICES_KEY, JSON.stringify(services));
 }

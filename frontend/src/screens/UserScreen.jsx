@@ -33,6 +33,11 @@ function UserScreen() {
     email: "",
   });
   const [editErrors, setEditErrors] = useState({});
+  const [approveModalApplication, setApproveModalApplication] = useState(null);
+  const [declineModalApplication, setDeclineModalApplication] = useState(null);
+  const [merchantId, setMerchantId] = useState("");
+  const [reasonForDecline, setReasonForDecline] = useState("");
+  const [approvalErrors, setApprovalErrors] = useState({});
 
   const pendingApplicationsCount = useMemo(
     () => applications.filter((application) => application.status === "Pending Admin Approval").length,
@@ -161,7 +166,31 @@ function UserScreen() {
     });
   }
 
-  function updateApplicationStatus(applicationEmail, nextStatus) {
+  function openApproveModal(application) {
+    setApproveModalApplication(application);
+    setMerchantId("");
+    setApprovalErrors({});
+  }
+
+  function closeApproveModal() {
+    setApproveModalApplication(null);
+    setMerchantId("");
+    setApprovalErrors({});
+  }
+
+  function openDeclineModal(application) {
+    setDeclineModalApplication(application);
+    setReasonForDecline("");
+    setApprovalErrors({});
+  }
+
+  function closeDeclineModal() {
+    setDeclineModalApplication(null);
+    setReasonForDecline("");
+    setApprovalErrors({});
+  }
+
+  function updateApplicationStatus(applicationEmail, nextStatus, details = {}) {
     const nextApplications = applications.map((application) => {
       if (application.email !== applicationEmail) {
         return application;
@@ -170,6 +199,9 @@ function UserScreen() {
       return {
         ...application,
         status: nextStatus,
+        merchantId: details.merchantId || application.merchantId || "",
+        reasonForDecline: details.reasonForDecline || application.reasonForDecline || "",
+        reviewedAt: new Date().toISOString(),
       };
     });
 
@@ -201,6 +233,48 @@ function UserScreen() {
           ? "Seller application approved and user role upgraded to Seller."
           : "Seller application declined.",
     });
+  }
+
+  function handleApproveSubmit(event) {
+    event.preventDefault();
+
+    const nextErrors = {};
+
+    if (!merchantId.trim()) {
+      nextErrors.merchantId = "merchant_id is required before approval.";
+    }
+
+    setApprovalErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    updateApplicationStatus(approveModalApplication.email, "Approved", {
+      merchantId,
+    });
+    closeApproveModal();
+  }
+
+  function handleDeclineSubmit(event) {
+    event.preventDefault();
+
+    const nextErrors = {};
+
+    if (!reasonForDecline.trim()) {
+      nextErrors.reasonForDecline = "reason_for_decline is required.";
+    }
+
+    setApprovalErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    updateApplicationStatus(declineModalApplication.email, "Declined", {
+      reasonForDecline,
+    });
+    closeDeclineModal();
   }
 
   return (
@@ -298,7 +372,7 @@ function UserScreen() {
                                   variant="outline-success"
                                   size="sm"
                                   disabled={application.status === "Approved"}
-                                  onClick={() => updateApplicationStatus(application.email, "Approved")}
+                                  onClick={() => openApproveModal(application)}
                                 >
                                   Approve
                                 </Button>
@@ -306,7 +380,7 @@ function UserScreen() {
                                   variant="outline-danger"
                                   size="sm"
                                   disabled={application.status === "Declined"}
-                                  onClick={() => updateApplicationStatus(application.email, "Declined")}
+                                  onClick={() => openDeclineModal(application)}
                                 >
                                   Decline
                                 </Button>
@@ -371,6 +445,71 @@ function UserScreen() {
               </Button>
               <Button type="submit" variant="dark">
                 Save Changes
+              </Button>
+            </Modal.Footer>
+          </Form>
+        </Modal>
+
+        <Modal show={Boolean(approveModalApplication)} onHide={closeApproveModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Approve Seller Application</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={handleApproveSubmit} noValidate>
+            <Modal.Body>
+              <p className="text-muted mb-3">
+                Assign the merchant_id before approving this seller account.
+              </p>
+              <Form.Group controlId="approveMerchantId">
+                <Form.Label>merchant_id</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={merchantId}
+                  onChange={(event) => setMerchantId(event.target.value)}
+                  isInvalid={Boolean(approvalErrors.merchantId)}
+                  placeholder="MERCHANT-12345"
+                />
+                <Form.Control.Feedback type="invalid">{approvalErrors.merchantId}</Form.Control.Feedback>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="outline-secondary" onClick={closeApproveModal}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="success">
+                Confirm Approval
+              </Button>
+            </Modal.Footer>
+          </Form>
+        </Modal>
+
+        <Modal show={Boolean(declineModalApplication)} onHide={closeDeclineModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Decline Seller Application</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={handleDeclineSubmit} noValidate>
+            <Modal.Body>
+              <p className="text-muted mb-3">
+                Enter reason_for_decline to document why this seller application is declined.
+              </p>
+              <Form.Group controlId="declineReason">
+                <Form.Label>reason_for_decline</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={reasonForDecline}
+                  onChange={(event) => setReasonForDecline(event.target.value)}
+                  isInvalid={Boolean(approvalErrors.reasonForDecline)}
+                  placeholder="Application does not meet seller requirements"
+                />
+                <Form.Control.Feedback type="invalid">{approvalErrors.reasonForDecline}</Form.Control.Feedback>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="outline-secondary" onClick={closeDeclineModal}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="danger">
+                Confirm Decline
               </Button>
             </Modal.Footer>
           </Form>

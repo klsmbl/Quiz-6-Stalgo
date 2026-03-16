@@ -32,6 +32,11 @@ function Header() {
                   Admin Panel
                 </Nav.Link>
               ) : null}
+              {currentUser?.role === "Seller" ? (
+                <Nav.Link as={NavLink} to="/seller/dashboard">
+                  Seller Dashboard
+                </Nav.Link>
+              ) : null}
               {currentUser ? (
                 <>
                   <Navbar.Text className="header-user-label ms-lg-3 me-lg-2">

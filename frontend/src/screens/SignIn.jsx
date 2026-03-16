@@ -76,7 +76,13 @@ function SignIn() {
       text: `Welcome back, ${matchedUser.firstName}. You are signed in as ${matchedUser.role}.`,
     });
 
-    navigate(matchedUser.role === "Admin" ? "/admin/users" : "/", {
+    const destinationByRole = {
+      Admin: "/admin/users",
+      Seller: "/seller/dashboard",
+      User: "/",
+    };
+
+    navigate(destinationByRole[matchedUser.role] || "/", {
       replace: true,
     });
   }
