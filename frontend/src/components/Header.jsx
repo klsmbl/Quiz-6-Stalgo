@@ -15,9 +15,10 @@ function Header() {
 
   return (
     <header className="site-header">
-      <Navbar expand="lg" className="site-navbar py-3">
+      <Navbar expand="lg" className="site-navbar py-3" collapseOnSelect>
         <Container>
           <Navbar.Brand as={Link} to="/" className="site-brand">
+            <span className="brand-mark" aria-hidden="true">CL</span>
             CleanLink Marketplace
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="main-navigation" />
@@ -26,8 +27,11 @@ function Header() {
               <Nav.Link as={NavLink} to="/" end>
                 Home
               </Nav.Link>
+              <Nav.Link as={Link} to="/#services">
+                Services
+              </Nav.Link>
               <Nav.Link as={NavLink} to="/apply-seller">
-                Apply as Expert
+                Become a Seller
               </Nav.Link>
               {currentUser ? (
                 <Nav.Link as={NavLink} to="/profile">
@@ -56,9 +60,9 @@ function Header() {
               ) : (
                 <>
                   <Nav.Link as={NavLink} to="/signin">
-                    Sign In
+                    Login
                   </Nav.Link>
-                  <Button as={Link} to="/signup" variant="warning" className="fw-semibold px-4 ms-lg-2">
+                  <Button as={Link} to="/signup" variant="primary" className="fw-semibold px-4 ms-lg-2 nav-cta-btn">
                     Register
                   </Button>
                 </>

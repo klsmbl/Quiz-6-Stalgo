@@ -66,7 +66,10 @@ function ChatbotWidget() {
         <Card className="chatbot-card shadow-lg border-0">
           <Card.Body className="p-3 d-flex flex-column">
             <div className="chatbot-header mb-2">
-              <strong>AI Assistant</strong>
+              <div>
+                <strong>Support Assistant</strong>
+                <div className="text-muted small">Ask booking and service questions</div>
+              </div>
               <Button size="sm" variant="outline-dark" onClick={() => setIsOpen(false)}>
                 Close
               </Button>
@@ -90,8 +93,8 @@ function ChatbotWidget() {
         </Card>
       ) : null}
 
-      <Button className="chatbot-toggle" variant="dark" onClick={() => setIsOpen((current) => !current)}>
-        {isOpen ? "Hide Assistant" : "Ask AI"}
+      <Button className="chatbot-toggle" variant="primary" onClick={() => setIsOpen((current) => !current)}>
+        {isOpen ? "Hide Assistant" : "Need Help?"}
       </Button>
     </div>
   );

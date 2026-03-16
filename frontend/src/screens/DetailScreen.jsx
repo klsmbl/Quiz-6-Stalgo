@@ -77,11 +77,11 @@ function DetailScreen() {
   return (
     <main className="app-page py-5">
       <Container>
-        <Button as={Link} to="/" variant="outline-dark" className="mb-4">
+        <Button as={Link} to="/" variant="outline-primary" className="mb-4 fw-semibold">
           Back to Services
         </Button>
 
-        <Row className="g-4 align-items-start">
+        <Row className="g-4 align-items-start service-detail-layout">
           <Col lg={7}>
             <Card className="service-detail-card border-0 shadow-sm overflow-hidden">
               <Card.Img
@@ -100,7 +100,8 @@ function DetailScreen() {
           <Col lg={5}>
             <Card className="detail-sidebar border-0 shadow-sm">
               <Card.Body className="p-4">
-                <h2 className="h4 mb-3">Service Details</h2>
+                <h2 className="h4 mb-3">{service.serviceName}</h2>
+                <p className="text-muted mb-3">{service.description}</p>
                 <ListGroup variant="flush">
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Rating</span>
@@ -116,14 +117,14 @@ function DetailScreen() {
                   </ListGroup.Item>
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Expert</span>
-                    <span>{service.nameOfTheExpert}</span>
+                    <span>{service.nameOfTheExpert || service.sellerName || "Marketplace Seller"}</span>
                   </ListGroup.Item>
                 </ListGroup>
 
                 <Button
-                  variant="warning"
+                  variant="primary"
                   size="lg"
-                  className="w-100 mt-4 fw-semibold"
+                  className="w-100 mt-4 fw-semibold book-cta-btn"
                   onClick={handleBookService}
                 >
                   Book Service

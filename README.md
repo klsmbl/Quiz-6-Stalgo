@@ -1,72 +1,123 @@
-# Getting Started with Create React App
+# Carpet and Upholstery Cleaning Services Marketplace
 
-**After cloning the project, run `npm install` to install the dependencies.**
+A React frontend marketplace where customers can find carpet and upholstery cleaning experts, view services, and book through PayPal. The app supports role-based flows for customers, sellers, and admins.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Structure
 
-## Available Scripts
+- Root folder contains this README and workspace-level files.
+- Main frontend app is inside `frontend/`.
+- Redux architecture is inside `frontend/src/redux/`:
+	- `constants/`
+	- `actions/`
+	- `reducers/`
+	- `store.js`
 
-In the project directory, you can run:
+## Tech Stack
 
-### `npm start`
+- React.js
+- React Router
+- Redux
+- React Bootstrap + Bootswatch
+- Create React App tooling
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Customer Features
 
-### `npm test` 
+- Browse cleaning services on the home page.
+- View service details.
+- Book services through PayPal checkout.
+- View profile information and booking history.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information..
+### Seller Features
 
-### `npm run build`
+- Apply as a cleaning expert (requires admin approval).
+- Access seller dashboard after approval.
+- Add new cleaning services.
+- Manage existing services:
+	- View
+	- Edit
+	- Delete
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Admin Features
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Access admin-only user management page.
+- Manage users:
+	- Edit
+	- Delete
+- Review seller applications:
+	- Approve (requires `merchant_id`)
+	- Decline (requires `reason_for_decline`)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### AI Chatbot
 
-### `npm run eject`
+- Basic in-app chatbot for project-related questions only.
+- Supports common user questions about:
+	- Booking
+	- Seller application
+	- Payments
+	- Service duration
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Route Protection
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Protected pages require login and redirect to `/signin` when unauthenticated:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- `/profile`
+- `/seller/dashboard`
+- `/apply-seller`
+- `/admin/users`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Additional role protection:
 
-## Learn More
+- Admin-only: `/admin/users`
+- Seller-only: `/seller/dashboard`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## PayPal Booking Behavior
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+When a customer books a service:
 
-### Code Splitting
+- Payment is directed to the seller PayPal account.
+- Platform facilitates and tracks transaction metadata.
+- PayPal order description uses **service name only**.
+- Full service description is not used as order description.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Getting Started
 
-### Analyzing the Bundle Size
+### 1) Install Dependencies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Run commands from the frontend app folder:
 
-### Making a Progressive Web App
+```powershell
+cd frontend
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 2) Run Development Server
 
-### Advanced Configuration
+```powershell
+cd frontend
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Open http://localhost:3000
 
-### Deployment
+### 3) Build for Production
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```powershell
+cd frontend
+npm run build
+```
 
-### `npm run build` fails to minify
+## Demo Admin Account
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Auto-seeded on app startup if no admin exists:
+
+- Email: `admin@cleanlink.com`
+- Password: `Admin12345`
+
+## Available Scripts (inside `frontend/`)
+
+- `npm start` - Run development server
+- `npm run build` - Build production assets
+- `npm test` - Run tests
+
