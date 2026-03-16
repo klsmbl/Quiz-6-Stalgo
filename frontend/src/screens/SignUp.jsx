@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { ensureAdminUser, getUsers, saveUsers } from "../utils/storage";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -75,7 +76,9 @@ function SignUp() {
       return;
     }
 
-    const storedUsers = JSON.parse(localStorage.getItem("cleanLinkUsers") || "[]");
+    ensureAdminUser();
+
+    const storedUsers = getUsers();
     const emailExists = storedUsers.some((user) => user.email === formData.email);
 
     if (emailExists) {
@@ -98,7 +101,7 @@ function SignUp() {
       role: "User",
     };
 
-    localStorage.setItem("cleanLinkUsers", JSON.stringify([...storedUsers, newUser]));
+    saveUsers([...storedUsers, newUser]);
     setSubmitMessage({
       type: "success",
       text: "Registration successful. Your account has been created with the User role.",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { getSellerApplications, getUsers, saveSellerApplications } from "../utils/storage";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -75,7 +76,7 @@ function ApplySeller() {
       return;
     }
 
-    const storedUsers = JSON.parse(localStorage.getItem("cleanLinkUsers") || "[]");
+    const storedUsers = getUsers();
     const registeredUser = storedUsers.find((user) => user.email === formData.email);
 
     if (!registeredUser) {
@@ -86,7 +87,7 @@ function ApplySeller() {
       return;
     }
 
-    const existingApplications = JSON.parse(localStorage.getItem("cleanLinkSellerApplications") || "[]");
+    const existingApplications = getSellerApplications();
     const duplicateApplication = existingApplications.find(
       (application) => application.email === formData.email && application.status === "Pending Admin Approval",
     );
@@ -107,10 +108,7 @@ function ApplySeller() {
       submittedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem(
-      "cleanLinkSellerApplications",
-      JSON.stringify([...existingApplications, application]),
-    );
+    saveSellerApplications([...existingApplications, application]);
 
     setSubmitMessage({
       type: "success",

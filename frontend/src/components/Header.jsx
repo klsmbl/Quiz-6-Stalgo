@@ -1,7 +1,16 @@
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { clearCurrentUser, getCurrentUser } from "../utils/storage";
 
 function Header() {
+  const navigate = useNavigate();
+  const currentUser = getCurrentUser();
+
+  function handleSignOut() {
+    clearCurrentUser();
+    navigate("/signin");
+  }
+
   return (
     <header className="site-header">
       <Navbar expand="lg" className="site-navbar py-3">
@@ -18,12 +27,30 @@ function Header() {
               <Nav.Link as={NavLink} to="/apply-seller">
                 Apply as Expert
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/signin">
-                Sign In
-              </Nav.Link>
-              <Button as={Link} to="/signup" variant="warning" className="fw-semibold px-4 ms-lg-2">
-                Register
-              </Button>
+              {currentUser?.role === "Admin" ? (
+                <Nav.Link as={NavLink} to="/admin/users">
+                  Admin Panel
+                </Nav.Link>
+              ) : null}
+              {currentUser ? (
+                <>
+                  <Navbar.Text className="header-user-label ms-lg-3 me-lg-2">
+                    {currentUser.firstName} {currentUser.lastName} · {currentUser.role}
+                  </Navbar.Text>
+                  <Button variant="outline-dark" className="fw-semibold px-4" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Nav.Link as={NavLink} to="/signin">
+                    Sign In
+                  </Nav.Link>
+                  <Button as={Link} to="/signup" variant="warning" className="fw-semibold px-4 ms-lg-2">
+                    Register
+                  </Button>
+                </>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

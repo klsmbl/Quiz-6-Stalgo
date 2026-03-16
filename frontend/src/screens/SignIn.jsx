@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ensureAdminUser, getDefaultAdminCredentials, getUsers, setCurrentUser } from "../utils/storage";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function SignIn() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -14,6 +16,7 @@ function SignIn() {
   const [submitMessage, setSubmitMessage] = useState(null);
 
   const registrationMessage = useMemo(() => location.state?.message || "", [location.state]);
+  const adminCredentials = useMemo(() => getDefaultAdminCredentials(), []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -51,7 +54,9 @@ function SignIn() {
       return;
     }
 
-    const storedUsers = JSON.parse(localStorage.getItem("cleanLinkUsers") || "[]");
+    ensureAdminUser();
+
+    const storedUsers = getUsers();
     const matchedUser = storedUsers.find(
       (user) => user.email === formData.email && user.password === formData.password,
     );
@@ -64,9 +69,15 @@ function SignIn() {
       return;
     }
 
+    setCurrentUser(matchedUser);
+
     setSubmitMessage({
       type: "success",
       text: `Welcome back, ${matchedUser.firstName}. You are signed in as ${matchedUser.role}.`,
+    });
+
+    navigate(matchedUser.role === "Admin" ? "/admin/users" : "/", {
+      replace: true,
     });
   }
 
@@ -90,6 +101,10 @@ function SignIn() {
                   <h2 className="h3 mb-2">Sign In</h2>
                   <p className="text-muted mb-0">Use your email and password to continue.</p>
                 </div>
+
+                <Alert variant="light" className="admin-hint">
+                  Demo Admin: {adminCredentials.email} / {adminCredentials.password}
+                </Alert>
 
                 {registrationMessage ? <Alert variant="success">{registrationMessage}</Alert> : null}
                 {submitMessage ? <Alert variant={submitMessage.type}>{submitMessage.text}</Alert> : null}

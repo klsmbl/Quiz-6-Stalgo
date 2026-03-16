@@ -113,7 +113,8 @@ a {
 
 .service-detail-card,
 .detail-sidebar,
-.auth-card {
+.auth-card,
+.admin-card {
   background: var(--surface-strong);
 }
 
@@ -158,6 +159,44 @@ a {
 
 .auth-card {
   box-shadow: var(--shadow-soft);
+}
+
+.admin-card {
+  border-radius: 28px;
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-tabs .nav-link {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-tabs .nav-link.active {
+  color: var(--teal);
+}
+
+.admin-table thead th {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  border-bottom-color: rgba(23, 36, 38, 0.1);
+}
+
+.admin-table tbody td {
+  padding-block: 1rem;
+  border-bottom-color: rgba(23, 36, 38, 0.08);
+}
+
+.header-user-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.admin-hint {
+  border: 0;
+  background: rgba(32, 79, 82, 0.08);
+  color: var(--teal);
 }
 
 .auth-card .form-control,
