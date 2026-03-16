@@ -20,7 +20,7 @@ function DetailScreen() {
 
   if (!service) {
     return (
-      <main className="py-5">
+      <main className="app-page py-5">
         <Container>
           <Button as={Link} to="/" variant="outline-dark" className="mb-4">
             Back to Services
@@ -41,7 +41,7 @@ function DetailScreen() {
   const paypalCheckoutUrl = buildPayPalCheckoutUrl(service);
 
   return (
-    <main className="py-5">
+    <main className="app-page py-5">
       <Container>
         <Button as={Link} to="/" variant="outline-dark" className="mb-4">
           Back to Services
@@ -49,7 +49,7 @@ function DetailScreen() {
 
         <Row className="g-4 align-items-start">
           <Col lg={7}>
-            <Card className="border-0 shadow-sm overflow-hidden">
+            <Card className="service-detail-card border-0 shadow-sm overflow-hidden">
               <Card.Img
                 variant="top"
                 src={service.sampleImage}
@@ -64,7 +64,7 @@ function DetailScreen() {
           </Col>
 
           <Col lg={5}>
-            <Card className="border-0 shadow-sm">
+            <Card className="detail-sidebar border-0 shadow-sm">
               <Card.Body className="p-4">
                 <h2 className="h4 mb-3">Service Details</h2>
                 <ListGroup variant="flush">
