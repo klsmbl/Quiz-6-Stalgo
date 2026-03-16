@@ -1,13 +1,17 @@
 import { useMemo, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ensureAdminUser, getDefaultAdminCredentials, getUsers, setCurrentUser } from "../utils/storage";
+import { signIn } from "../redux/actions/authActions";
+import { getDefaultAdminCredentials } from "../utils/storage";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function SignIn() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users.users);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,10 +58,7 @@ function SignIn() {
       return;
     }
 
-    ensureAdminUser();
-
-    const storedUsers = getUsers();
-    const matchedUser = storedUsers.find(
+    const matchedUser = users.find(
       (user) => user.email === formData.email && user.password === formData.password,
     );
 
@@ -69,7 +70,7 @@ function SignIn() {
       return;
     }
 
-    setCurrentUser(matchedUser);
+    dispatch(signIn(matchedUser));
 
     setSubmitMessage({
       type: "success",

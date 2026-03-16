@@ -1,8 +1,12 @@
 import { Badge, Card, Col, Container, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import services from "../data/services";
 
 function HomeScreen() {
+  const catalogServices = useSelector((state) => state.services.catalogServices);
+  const sellerServices = useSelector((state) => state.services.sellerServices);
+  const services = [...catalogServices, ...sellerServices];
+
   return (
     <main className="app-page py-5">
       <Container>
@@ -22,7 +26,7 @@ function HomeScreen() {
               <Card as={Link} to={`/service/${service.id}`} className="service-card h-100 text-decoration-none border-0 shadow-sm">
                 <Card.Img
                   variant="top"
-                  src={service.sampleImage}
+                  src={service.sampleImage || service.image}
                   alt={service.serviceName}
                   style={{ height: "220px", objectFit: "cover" }}
                 />
@@ -34,7 +38,7 @@ function HomeScreen() {
                     {service.description}
                   </Card.Text>
                   <div className="d-flex justify-content-between align-items-center">
-                    <span className="text-dark fw-semibold">Rating: {service.rating}</span>
+                    <span className="text-dark fw-semibold">Rating: {service.rating || "New"}</span>
                     <Badge bg="warning" text="dark">
                       ${service.price.toFixed(2)}
                     </Badge>

@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { ensureAdminUser, getUsers, saveUsers } from "../utils/storage";
+import { addUser } from "../redux/actions/userActions";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function SignUp() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users.users);
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -76,10 +79,7 @@ function SignUp() {
       return;
     }
 
-    ensureAdminUser();
-
-    const storedUsers = getUsers();
-    const emailExists = storedUsers.some((user) => user.email === formData.email);
+    const emailExists = users.some((user) => user.email === formData.email);
 
     if (emailExists) {
       setSubmitMessage({
@@ -101,7 +101,7 @@ function SignUp() {
       role: "User",
     };
 
-    saveUsers([...storedUsers, newUser]);
+    dispatch(addUser(newUser, users));
     setSubmitMessage({
       type: "success",
       text: "Registration successful. Your account has been created with the User role.",

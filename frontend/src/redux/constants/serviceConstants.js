@@ -1,0 +1,3 @@
+export const SERVICE_ADD = "SERVICE_ADD";
+export const SERVICE_UPDATE = "SERVICE_UPDATE";
+export const SERVICE_DELETE = "SERVICE_DELETE";

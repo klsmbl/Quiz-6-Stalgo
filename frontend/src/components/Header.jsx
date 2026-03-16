@@ -1,13 +1,15 @@
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { clearCurrentUser, getCurrentUser } from "../utils/storage";
+import { signOut } from "../redux/actions/authActions";
 
 function Header() {
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   function handleSignOut() {
-    clearCurrentUser();
+    dispatch(signOut());
     navigate("/signin");
   }
 
@@ -27,6 +29,11 @@ function Header() {
               <Nav.Link as={NavLink} to="/apply-seller">
                 Apply as Expert
               </Nav.Link>
+              {currentUser ? (
+                <Nav.Link as={NavLink} to="/profile">
+                  Profile
+                </Nav.Link>
+              ) : null}
               {currentUser?.role === "Admin" ? (
                 <Nav.Link as={NavLink} to="/admin/users">
                   Admin Panel

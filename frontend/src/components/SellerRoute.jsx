@@ -1,9 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { getCurrentUser } from "../utils/storage";
+import { useSelector } from "react-redux";
 
 function SellerRoute({ children }) {
   const location = useLocation();
-  const currentUser = getCurrentUser();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   if (!currentUser) {
     return <Navigate to="/signin" replace state={{ from: location.pathname }} />;

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminRoute from "./components/AdminRoute";
+import ChatbotWidget from "./components/ChatbotWidget";
+import PrivateRoute from "./components/PrivateRoute";
 import SellerRoute from "./components/SellerRoute";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -11,6 +13,7 @@ import SignUp from "./screens/SignUp";
 import ApplySeller from "./screens/ApplySeller";
 import SellerDashboard from "./screens/SellerDashboard";
 import UserScreen from "./screens/UserScreen";
+import UserProfile from "./screens/UserProfile";
 import { ensureAdminUser } from "./utils/storage";
 
 function App() {
@@ -27,7 +30,22 @@ function App() {
           <Route path="/service/:id" element={<DetailScreen />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/apply-seller" element={<ApplySeller />} />
+          <Route
+            path="/apply-seller"
+            element={(
+              <PrivateRoute>
+                <ApplySeller />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/profile"
+            element={(
+              <PrivateRoute>
+                <UserProfile />
+              </PrivateRoute>
+            )}
+          />
           <Route
             path="/seller/dashboard"
             element={(
@@ -46,6 +64,7 @@ function App() {
           />
         </Routes>
         <Footer />
+        <ChatbotWidget />
       </div>
     </BrowserRouter>
   );

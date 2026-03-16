@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getSellerApplications, getUsers, saveSellerApplications } from "../utils/storage";
+import { addSellerApplication } from "../redux/actions/sellerApplicationActions";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function ApplySeller() {
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users.users);
+  const applications = useSelector((state) => state.sellerApplications.applications);
+  const currentUser = useSelector((state) => state.auth.currentUser);
   const [formData, setFormData] = useState({
-    email: "",
+    email: currentUser?.email || "",
     expertiseTitle: "",
     yearsOfExperience: "",
     serviceArea: "",
@@ -76,8 +81,7 @@ function ApplySeller() {
       return;
     }
 
-    const storedUsers = getUsers();
-    const registeredUser = storedUsers.find((user) => user.email === formData.email);
+    const registeredUser = users.find((user) => user.email === formData.email);
 
     if (!registeredUser) {
       setSubmitMessage({
@@ -87,8 +91,7 @@ function ApplySeller() {
       return;
     }
 
-    const existingApplications = getSellerApplications();
-    const duplicateApplication = existingApplications.find(
+    const duplicateApplication = applications.find(
       (application) => application.email === formData.email && application.status === "Pending Admin Approval",
     );
 
@@ -108,7 +111,7 @@ function ApplySeller() {
       submittedAt: new Date().toISOString(),
     };
 
-    saveSellerApplications([...existingApplications, application]);
+    dispatch(addSellerApplication(application, applications));
 
     setSubmitMessage({
       type: "success",
@@ -116,7 +119,7 @@ function ApplySeller() {
     });
 
     setFormData({
-      email: "",
+      email: currentUser?.email || "",
       expertiseTitle: "",
       yearsOfExperience: "",
       serviceArea: "",

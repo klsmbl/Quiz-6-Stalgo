@@ -11,19 +11,18 @@ import {
   Table,
   Tabs,
 } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  getCurrentUser,
-  getSellerApplications,
-  getUsers,
-  saveSellerApplications,
-  saveUsers,
-  syncCurrentUser,
-} from "../utils/storage";
+  reviewSellerApplication,
+  setSellerApplications,
+} from "../redux/actions/sellerApplicationActions";
+import { setUsers } from "../redux/actions/userActions";
 
 function UserScreen() {
-  const currentUser = getCurrentUser();
-  const [users, setUsers] = useState(() => getUsers());
-  const [applications, setApplications] = useState(() => getSellerApplications());
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const users = useSelector((state) => state.users.users);
+  const applications = useSelector((state) => state.sellerApplications.applications);
   const [activeTab, setActiveTab] = useState("users");
   const [submitMessage, setSubmitMessage] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
@@ -131,11 +130,8 @@ function UserScreen() {
       };
     });
 
-    setUsers(nextUsers);
-    setApplications(nextApplications);
-    saveUsers(nextUsers);
-    saveSellerApplications(nextApplications);
-    syncCurrentUser(nextUsers);
+    dispatch(setUsers(nextUsers));
+    dispatch(setSellerApplications(nextApplications));
     setSubmitMessage({
       type: "success",
       text: "User account updated successfully.",
@@ -155,11 +151,8 @@ function UserScreen() {
     const nextUsers = users.filter((user) => user.email !== userEmail);
     const nextApplications = applications.filter((application) => application.email !== userEmail);
 
-    setUsers(nextUsers);
-    setApplications(nextApplications);
-    saveUsers(nextUsers);
-    saveSellerApplications(nextApplications);
-    syncCurrentUser(nextUsers);
+    dispatch(setUsers(nextUsers));
+    dispatch(setSellerApplications(nextApplications));
     setSubmitMessage({
       type: "success",
       text: "User account deleted successfully.",
@@ -191,41 +184,31 @@ function UserScreen() {
   }
 
   function updateApplicationStatus(applicationEmail, nextStatus, details = {}) {
-    const nextApplications = applications.map((application) => {
-      if (application.email !== applicationEmail) {
-        return application;
-      }
-
-      return {
-        ...application,
-        status: nextStatus,
-        merchantId: details.merchantId || application.merchantId || "",
-        reasonForDecline: details.reasonForDecline || application.reasonForDecline || "",
-        reviewedAt: new Date().toISOString(),
-      };
-    });
-
-    let nextUsers = [...users];
+    dispatch(
+      reviewSellerApplication(
+        {
+          email: applicationEmail,
+          status: nextStatus,
+          merchantId: details.merchantId || "",
+          reasonForDecline: details.reasonForDecline || "",
+        },
+        applications,
+        users,
+      ),
+    );
 
     if (nextStatus === "Approved") {
-      nextUsers = users.map((user) => {
-        if (user.email !== applicationEmail) {
-          return user;
-        }
-
-        return {
-          ...user,
-          role: "Seller",
-        };
-      });
-
-      saveUsers(nextUsers);
-      setUsers(nextUsers);
-      syncCurrentUser(nextUsers);
+      const nextUsers = users.map((user) =>
+        user.email === applicationEmail
+          ? {
+              ...user,
+              role: "Seller",
+            }
+          : user,
+      );
+      dispatch(setUsers(nextUsers));
     }
 
-    saveSellerApplications(nextApplications);
-    setApplications(nextApplications);
     setSubmitMessage({
       type: nextStatus === "Approved" ? "success" : "warning",
       text:

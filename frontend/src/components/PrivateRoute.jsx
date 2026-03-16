@@ -1,7 +1,7 @@
-import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Navigate, useLocation } from "react-router-dom";
 
-function AdminRoute({ children }) {
+function PrivateRoute({ children }) {
   const location = useLocation();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
@@ -9,11 +9,7 @@ function AdminRoute({ children }) {
     return <Navigate to="/signin" replace state={{ from: location.pathname }} />;
   }
 
-  if (currentUser.role !== "Admin") {
-    return <Navigate to="/" replace />;
-  }
-
   return children;
 }
 
-export default AdminRoute;
+export default PrivateRoute;

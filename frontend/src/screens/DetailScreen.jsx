@@ -1,14 +1,16 @@
 import { Button, Card, Col, Container, ListGroup, Row } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
-import { getServiceById } from "../data/services";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { addOrder } from "../redux/actions/orderActions";
 
-function buildPayPalCheckoutUrl(service) {
+function buildPayPalCheckoutUrl(service, orderId) {
   const searchParams = new URLSearchParams({
     cmd: "_xclick",
-    business: service.sellerPayPalEmail,
+    business: service.sellerPayPalEmail || service.sellerEmail,
     item_name: service.serviceName,
     amount: service.price.toFixed(2),
     currency_code: "USD",
+    custom: orderId,
   });
 
   return `https://www.paypal.com/cgi-bin/webscr?${searchParams.toString()}`;
@@ -16,7 +18,12 @@ function buildPayPalCheckoutUrl(service) {
 
 function DetailScreen() {
   const { id } = useParams();
-  const service = getServiceById(id);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const catalogServices = useSelector((state) => state.services.catalogServices);
+  const sellerServices = useSelector((state) => state.services.sellerServices);
+  const service = [...catalogServices, ...sellerServices].find((currentService) => currentService.id === id);
 
   if (!service) {
     return (
@@ -38,7 +45,34 @@ function DetailScreen() {
     );
   }
 
-  const paypalCheckoutUrl = buildPayPalCheckoutUrl(service);
+  function handleBookService() {
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
+
+    const orderId = `ORD-${Date.now()}`;
+    dispatch(
+      addOrder({
+        orderId,
+        userEmail: currentUser.email,
+        serviceId: service.id,
+        serviceName: service.serviceName,
+        orderDescription: service.serviceName,
+        price: service.price,
+        sellerPayPalEmail: service.sellerPayPalEmail || service.sellerEmail,
+        platformMerchantTracking: {
+          orderDescription: service.serviceName,
+          price: service.price,
+        },
+        status: "Pending Payment",
+        date: new Date().toISOString(),
+      }),
+    );
+
+    const paypalCheckoutUrl = buildPayPalCheckoutUrl(service, orderId);
+    window.open(paypalCheckoutUrl, "_blank", "noopener,noreferrer");
+  }
 
   return (
     <main className="app-page py-5">
@@ -52,7 +86,7 @@ function DetailScreen() {
             <Card className="service-detail-card border-0 shadow-sm overflow-hidden">
               <Card.Img
                 variant="top"
-                src={service.sampleImage}
+                src={service.sampleImage || service.image}
                 alt={service.serviceName}
                 style={{ height: "420px", objectFit: "cover" }}
               />
@@ -70,7 +104,7 @@ function DetailScreen() {
                 <ListGroup variant="flush">
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Rating</span>
-                    <span>{service.rating}</span>
+                    <span>{service.rating || "New"}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Price</span>
@@ -78,7 +112,7 @@ function DetailScreen() {
                   </ListGroup.Item>
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Duration</span>
-                    <span>{service.durationOfService}</span>
+                    <span>{service.durationOfService || service.duration}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className="px-0 d-flex justify-content-between">
                     <span className="fw-semibold">Expert</span>
@@ -87,13 +121,10 @@ function DetailScreen() {
                 </ListGroup>
 
                 <Button
-                  as="a"
-                  href={paypalCheckoutUrl}
-                  target="_blank"
-                  rel="noreferrer"
                   variant="warning"
                   size="lg"
                   className="w-100 mt-4 fw-semibold"
+                  onClick={handleBookService}
                 >
                   Book Service
                 </Button>
